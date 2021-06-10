@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MapCamera</string>
+    <string name="button">Button</string>
+    <string name="description">camera picture</string>
+    <string name="saved">Saved Image</string>
+    <string name="title_activity_maps">Map</string>
+</resources>

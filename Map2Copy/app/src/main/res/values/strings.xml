@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MapCopy</string>
+    <string name="title_activity_maps">MapCopy</string>
+    <string name="deletebutton">削除</string>
+    <string name="okbutton">OK</string>
+    <string name="conbutton">確認</string>
+    <string name="hint_name">Name</string>
+</resources>
