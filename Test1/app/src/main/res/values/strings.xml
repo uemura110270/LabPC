@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Test1</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="deletebutton">削除</string>
+    <string name="okbutton">OK</string>
+    <string name="viewbutton">写真表示</string>
+    <string name="picbutton">写真追加</string>
+    <string name="conbutton">確認</string>
+    <string name="hint_name">Name</string>
+    <string name="button">Button</string>
+    <string name="gallerybutton">Gallery</string>
+    <string name="description">camera picture</string>
+    <string name="saved">Saved Image</string>
+</resources>
