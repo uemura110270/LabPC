@@ -37,7 +37,7 @@ public abstract class BaseFragment extends Fragment
         locationManager = new MyLocationManager(getContext(), this);
         locationManager.startLocationUpdates();
     }
-
+    //github用に書いてます
     @Override
     public void onPause() {
         super.onPause();
