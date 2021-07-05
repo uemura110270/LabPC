@@ -198,7 +198,7 @@ public class MapsActivity extends AppCompatActivity
                 });
                 viewButton.setOnClickListener(v->{
                     if(isExternalStorageWritable()){
-                        String name=marker.getTitle();
+                        String name="restaurant";
                         Log.d("テスト",name);
                         readData2(name);
                     }
@@ -357,13 +357,13 @@ public class MapsActivity extends AppCompatActivity
         if(helper2 == null){
             helper2 = new TestOpenHelper2(getApplicationContext());
         }
-        if(db == null){
-            db = helper2.getReadableDatabase();
-            Log.d("debug","readData");
+        if(db2 == null){
+            db2 = helper2.getReadableDatabase();
+            Log.d("テスト2","readData");
         }
         name="restaurant";
-        Log.d("debug","**********Cursor");
-        Cursor cursor = db.query(
+        Log.d("テスト2","readData1");
+        Cursor cursor = db2.query(
                 "picture",
                 null,
                 "name=?",
@@ -372,17 +372,21 @@ public class MapsActivity extends AppCompatActivity
                 null,
                 null
         );
-        Log.d("テスト","ほげ");
+        Log.d("テスト2","ほげ");
 
         cursor.moveToFirst();
         StringBuilder sbuilder = new StringBuilder();
         for (int i = 0; i < cursor.getCount(); i++) {
+
+            Log.d("テスト2",cursor.getString(1));
             cursor.moveToNext();
-            Log.d("テスト",cursor.getString(0));
         }
+        Log.d("テスト2","ほげほげ");
+
         // 忘れずに！
         cursor.close();
         Log.d("debug","**********"+sbuilder.toString());
+
     }
     private void insertData(SQLiteDatabase db, String name, float longitude, float latitude){
         ContentValues values = new ContentValues();
