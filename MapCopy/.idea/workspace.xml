@@ -6,7 +6,18 @@
     </shared>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6e0734ec-82fd-4f5b-a0a3-f38473e5b553" name="Default Changelist" comment="" />
+    <list default="true" id="6e0734ec-82fd-4f5b-a0a3-f38473e5b553" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../Camera2/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../CameraSave/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Database/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Map2/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Map2Copy/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Camera2/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Camera2/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MapApp2/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../MapApp2/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Test1/app/src/main/java/com/example/test1/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Test1/app/src/main/java/com/example/test1/MapsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Test1/app/src/main/res/layout/activity_maps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Test1/app/src/main/res/layout/activity_maps.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -17,7 +28,11 @@
       <ProjectState />
     </projectState>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
   <component name="ProjectId" id="1qowvIOJEPsg02m4OFdDyC2yJN1" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -25,7 +40,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../MyApplication" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ReadImage" />
   </component>
   <component name="RunManager">
     <configuration default="true" type="AndroidJUnit" factoryName="Android JUnit">
@@ -107,10 +122,10 @@
       <screen x="-1920" y="0" width="1920" height="1040" />
     </state>
     <state x="-1268" y="106" key="#app/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1618977710901" />
-    <state x="-1180" y="275" key="FileChooserDialogImpl" timestamp="1618977724318">
+    <state x="-1180" y="275" key="FileChooserDialogImpl" timestamp="1626402811901">
       <screen x="-1920" y="0" width="1920" height="1040" />
     </state>
-    <state x="-1180" y="275" key="FileChooserDialogImpl/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1618977724318" />
+    <state x="-1180" y="275" key="FileChooserDialogImpl/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1626402811901" />
     <state x="740" y="275" key="FileChooserDialogImpl/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1617765129393" />
   </component>
 </project>

@@ -1,17 +1,23 @@
 package com.example.test1;
 
 import android.Manifest;
+import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -26,24 +32,14 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
 
-import android.location.Location;
-import android.os.Bundle;
+import androidx.core.content.ContextCompat;
+
 import android.os.Looper;
+import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -51,6 +47,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback {
@@ -65,8 +63,12 @@ public class MapsActivity extends AppCompatActivity
     public TestOpenHelper2 helper2;
     public SQLiteDatabase db;
     public SQLiteDatabase db2;
-    Button confirmButton,okButton,picButton,viewButton;
+    Button confirmButton,okButton,picButton,viewButton,backButton,nextButton,winButton;
+    ImageView imageView;
     Boolean confirmflag=false;
+    int p=0,num=0;
+    public String[] picpath2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //onCreateの継承
@@ -86,6 +88,15 @@ public class MapsActivity extends AppCompatActivity
         confirmButton = findViewById(R.id.confirm_button);
         viewButton = findViewById(R.id.view_button);
         picButton = findViewById(R.id.picbutton);
+        winButton = findViewById(R.id.win_button);
+        backButton = findViewById(R.id.back_button);
+        nextButton = findViewById(R.id.next_button);
+        imageView = findViewById(R.id.image_view);
+
+        nextButton.setVisibility(View.INVISIBLE);
+        backButton.setVisibility(View.INVISIBLE);
+        winButton.setVisibility(View.INVISIBLE);
+        imageView.setVisibility(View.INVISIBLE);
         Log.d("テスト","onCreateEnd");
     }
     @Override
@@ -159,6 +170,7 @@ public class MapsActivity extends AppCompatActivity
             public boolean onMarkerClick(Marker marker) {
                 Button deleteButton = findViewById(R.id.delete_button);
                 Log.d("テスト","選択");
+                AtomicReference<AtomicReferenceArray<String>> picpath1 = new AtomicReference<>(new AtomicReferenceArray<>(new String[0]));
                 deleteButton.setOnClickListener(v->{
                     if(isExternalStorageWritable()){
                         marker.remove();
@@ -193,16 +205,57 @@ public class MapsActivity extends AppCompatActivity
                     if(isExternalStorageWritable()){
                         //setContentView(R.layout.activity_camera);
                         Intent intent = new Intent(getApplication(),CameraActivity.class);
+                        intent.putExtra("name",marker.getTitle() );//第一引数key、第二引数渡したい値
                         startActivity(intent);
                     }
                 });
                 viewButton.setOnClickListener(v->{
                     if(isExternalStorageWritable()){
-                        String name="restaurant";
+                        String name=marker.getTitle();
                         Log.d("テスト",name);
-                        readData2(name);
+                        nextButton.setVisibility(View.VISIBLE);
+                        backButton.setVisibility(View.VISIBLE);
+                        winButton.setVisibility(View.VISIBLE);
+                        imageView.setVisibility(View.VISIBLE);
+                        //picpath1.set(new AtomicReferenceArray<>(readData3(name)));
+                        picpath2=readData3(name);
+                        Bitmap bmImg = BitmapFactory.decodeFile(picpath2[num]);
+                        imageView.setImageBitmap(bmImg);
+
                     }
                 });
+                nextButton.setOnClickListener(v -> {
+                    if (isExternalStorageWritable()) {
+                        if(picpath2.length-2>num) {
+                            num = num + 1;
+                        }
+                        Log.d("num", String.valueOf(num)+picpath2.length);
+                        Bitmap bmImg = BitmapFactory.decodeFile(picpath2[num]);
+                        imageView.setImageBitmap(bmImg);
+                    }
+                });
+                backButton.setOnClickListener(v -> {
+                    if (isExternalStorageWritable()) {
+                        if(num>0) {
+                            num = num - 1;
+                        }
+                        Log.d("num", String.valueOf(num));
+                        Bitmap bmImg = BitmapFactory.decodeFile(picpath2[num]);
+                        imageView.setImageBitmap(bmImg);
+                    }
+                });
+                winButton.setOnClickListener(v -> {
+                    if (isExternalStorageWritable()) {
+                        nextButton.setVisibility(View.INVISIBLE);
+                        backButton.setVisibility(View.INVISIBLE);
+                        winButton.setVisibility(View.INVISIBLE);
+                        imageView.setVisibility(View.INVISIBLE);
+                    }
+                });
+
+
+
+
                 return false;
             }
         });
@@ -359,10 +412,9 @@ public class MapsActivity extends AppCompatActivity
         }
         if(db2 == null){
             db2 = helper2.getReadableDatabase();
-            Log.d("テスト2","readData");
+            Log.d("debug","readData");
         }
-        name="restaurant";
-        Log.d("テスト2","readData1");
+        Log.d("debug","**********Cursor");
         Cursor cursor = db2.query(
                 "picture",
                 null,
@@ -372,20 +424,69 @@ public class MapsActivity extends AppCompatActivity
                 null,
                 null
         );
-        Log.d("テスト2","ほげ");
+        Log.d("テスト","ほげ");
 
         cursor.moveToFirst();
         StringBuilder sbuilder = new StringBuilder();
-        for (int i = 0; i < cursor.getCount(); i++) {
-
-            Log.d("テスト2",cursor.getString(1));
+        int pnum= cursor.getCount()-1;
+        for (int i = 0; i < cursor.getCount()-1; i++) {
             cursor.moveToNext();
-        }
-        Log.d("テスト2","ほげほげ");
+            Log.d("テスト",cursor.getString(0));
 
+        }
         // 忘れずに！
         cursor.close();
         Log.d("debug","**********"+sbuilder.toString());
+    }
+    public String[] readData3(String name){
+        Context context = getApplicationContext();
+        String[] picpath;
+        if(helper2 == null){
+            helper2 = new TestOpenHelper2(getApplicationContext());
+        }
+        if(db2 == null){
+            db2 = helper2.getReadableDatabase();
+            Log.d("debug","readData");
+        }
+
+        Log.d("debug","**********Cursor");
+        Cursor cursor = db2.query(
+                "picture",
+                null,
+                "name=?",
+                new String[]{name},
+                null,
+                null,
+                null
+        );
+        cursor.moveToFirst();
+
+        int p = cursor.getCount();
+        Log.d("テストp", String.valueOf(p));
+        picpath = new String[p];
+        for (int i = 0; i < cursor.getCount()-1; i++) {
+            String picname = (cursor.getString(1));
+            cursor.moveToNext();
+            Log.d("picname", picname);
+            ContentResolver contentResolver2 = getContentResolver();
+            Cursor cursor2 =
+                    contentResolver2.query(
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,             // UserDictionary.Words.CONTENT_URI, table
+                            new String[]{MediaStore.Images.Media.TITLE, MediaStore.Images.Media.DATE_ADDED, MediaStore.Images.Media.DATA},      // The columns to return for each row
+                            MediaStore.Images.Media.TITLE + "=?",       // Selection criteria
+                            new String[]{picname},
+                            null);      // The sort order for the returned rows
+
+            cursor2.moveToFirst();
+            picpath[i] = cursor2.getString(2);
+            Log.d("テストj", picpath[i]);
+            StringBuilder sbuilder = new StringBuilder();
+            Log.d("テスト", "ほげ3");
+            cursor2.close();
+        }
+        return picpath;
+            // 忘れずに！
+
 
     }
     private void insertData(SQLiteDatabase db, String name, float longitude, float latitude){
