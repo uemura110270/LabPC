@@ -92,7 +92,8 @@ public class MapsActivity extends AppCompatActivity
         backButton = findViewById(R.id.back_button);
         nextButton = findViewById(R.id.next_button);
         imageView = findViewById(R.id.image_view);
-
+        picButton.setVisibility(View.INVISIBLE);
+        viewButton.setVisibility(View.INVISIBLE);
         nextButton.setVisibility(View.INVISIBLE);
         backButton.setVisibility(View.INVISIBLE);
         winButton.setVisibility(View.INVISIBLE);
@@ -138,6 +139,13 @@ public class MapsActivity extends AppCompatActivity
             mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
             mGoogleMap.setMyLocationEnabled(true);
         }
+        mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng tapLocation) {
+                picButton.setVisibility(View.INVISIBLE);
+                viewButton.setVisibility(View.INVISIBLE);
+            }
+        });
         mGoogleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng longpushLocation) {
@@ -169,12 +177,25 @@ public class MapsActivity extends AppCompatActivity
             @Override
             public boolean onMarkerClick(Marker marker) {
                 Button deleteButton = findViewById(R.id.delete_button);
+                picButton.setVisibility(View.VISIBLE);
+                viewButton.setVisibility(View.VISIBLE);
                 Log.d("テスト","選択");
-                AtomicReference<AtomicReferenceArray<String>> picpath1 = new AtomicReference<>(new AtomicReferenceArray<>(new String[0]));
                 deleteButton.setOnClickListener(v->{
                     if(isExternalStorageWritable()){
                         marker.remove();
                         String name=marker.getTitle();
+                        if(helper == null){
+                            helper = new TestOpenHelper(getApplicationContext());
+                        }
+                        if(db == null){
+                            db = helper.getWritableDatabase();
+                        }
+                        if(helper2 == null){
+                            helper2 = new TestOpenHelper2(getApplicationContext());
+                        }
+                        if(db2 == null){
+                            db2 = helper.getWritableDatabase();
+                        }
                         Cursor cursor = db.query(
                                 "marker2",
                                 null,
@@ -188,6 +209,20 @@ public class MapsActivity extends AppCompatActivity
                         if(cursor.getCount()!=0){
                             Log.d("テスト","delete");
                             db.delete("marker2","name=?", new String[]{name});
+                        }
+                        Cursor cursor2 = db2.query(
+                                "picture",
+                                null,
+                                "name=?",
+                                new String[]{name},
+                                null,
+                                null,
+                                null
+                        );
+                        cursor2.moveToFirst();
+                        if(cursor2.getCount()!=0){
+                            Log.d("テスト","delete");
+                            db2.delete("picture","name=?", new String[]{name});
                         }
                     }
                     Log.d("テスト","削除");
@@ -213,15 +248,16 @@ public class MapsActivity extends AppCompatActivity
                     if(isExternalStorageWritable()){
                         String name=marker.getTitle();
                         Log.d("テスト",name);
-                        nextButton.setVisibility(View.VISIBLE);
-                        backButton.setVisibility(View.VISIBLE);
-                        winButton.setVisibility(View.VISIBLE);
-                        imageView.setVisibility(View.VISIBLE);
-                        //picpath1.set(new AtomicReferenceArray<>(readData3(name)));
                         picpath2=readData3(name);
-                        Bitmap bmImg = BitmapFactory.decodeFile(picpath2[num]);
-                        imageView.setImageBitmap(bmImg);
 
+                        if(picpath2.length!=0) {
+                            nextButton.setVisibility(View.VISIBLE);
+                            backButton.setVisibility(View.VISIBLE);
+                            winButton.setVisibility(View.VISIBLE);
+                            imageView.setVisibility(View.VISIBLE);
+                            Bitmap bmImg = BitmapFactory.decodeFile(picpath2[num]);
+                            imageView.setImageBitmap(bmImg);
+                        }
                     }
                 });
                 nextButton.setOnClickListener(v -> {
@@ -252,10 +288,6 @@ public class MapsActivity extends AppCompatActivity
                         imageView.setVisibility(View.INVISIBLE);
                     }
                 });
-
-
-
-
                 return false;
             }
         });
@@ -406,6 +438,71 @@ public class MapsActivity extends AppCompatActivity
         cursor.close();
         Log.d("debug","**********"+sbuilder.toString());
     }
+
+    public String[] readData3(String name){
+        Context context = getApplicationContext();
+        String[] picpath;
+        if(helper2 == null){
+            helper2 = new TestOpenHelper2(getApplicationContext());
+        }
+        if(db2 == null){
+            db2 = helper2.getReadableDatabase();
+            Log.d("debug","readData");
+        }
+
+        Log.d("debug","**********Cursor");
+        Cursor cursor = db2.query(
+                "picture",
+                null,
+                "name=?",
+                new String[]{name},
+                null,
+                null,
+                null
+        );
+        cursor.moveToFirst();
+
+        int p = cursor.getCount();
+        Log.d("テストp", String.valueOf(p));
+        picpath = new String[p];
+
+        if(p==0){
+            String[] a=new String[0];
+            return a;
+        }
+        for (int i = 0; i < cursor.getCount()-1; i++) {
+            String picname = (cursor.getString(1));
+            cursor.moveToNext();
+            Log.d("picname", picname);
+            ContentResolver contentResolver2 = getContentResolver();
+            Cursor cursor2 =
+                    contentResolver2.query(
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,             // UserDictionary.Words.CONTENT_URI, table
+                            new String[]{MediaStore.Images.Media.TITLE, MediaStore.Images.Media.DATE_ADDED, MediaStore.Images.Media.DATA},      // The columns to return for each row
+                            MediaStore.Images.Media.TITLE + "=?",       // Selection criteria
+                            new String[]{picname},
+                            null);      // The sort order for the returned rows
+
+            cursor2.moveToFirst();
+            picpath[i] = cursor2.getString(2);
+            Log.d("テストj", picpath[i]);
+            StringBuilder sbuilder = new StringBuilder();
+            Log.d("テスト", "ほげ3");
+            cursor2.close();
+        }
+        return picpath;
+        // 忘れずに！
+
+    }
+
+    private void insertData(SQLiteDatabase db, String name, float longitude, float latitude){
+        ContentValues values = new ContentValues();
+        values.put("name", name);
+        values.put("longitude", longitude);
+        values.put("latitude", latitude);
+        db.insert("marker2", null, values);
+    }
+
     public void readData2(String name){
         if(helper2 == null){
             helper2 = new TestOpenHelper2(getApplicationContext());
@@ -437,64 +534,6 @@ public class MapsActivity extends AppCompatActivity
         // 忘れずに！
         cursor.close();
         Log.d("debug","**********"+sbuilder.toString());
-    }
-    public String[] readData3(String name){
-        Context context = getApplicationContext();
-        String[] picpath;
-        if(helper2 == null){
-            helper2 = new TestOpenHelper2(getApplicationContext());
-        }
-        if(db2 == null){
-            db2 = helper2.getReadableDatabase();
-            Log.d("debug","readData");
-        }
-
-        Log.d("debug","**********Cursor");
-        Cursor cursor = db2.query(
-                "picture",
-                null,
-                "name=?",
-                new String[]{name},
-                null,
-                null,
-                null
-        );
-        cursor.moveToFirst();
-
-        int p = cursor.getCount();
-        Log.d("テストp", String.valueOf(p));
-        picpath = new String[p];
-        for (int i = 0; i < cursor.getCount()-1; i++) {
-            String picname = (cursor.getString(1));
-            cursor.moveToNext();
-            Log.d("picname", picname);
-            ContentResolver contentResolver2 = getContentResolver();
-            Cursor cursor2 =
-                    contentResolver2.query(
-                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,             // UserDictionary.Words.CONTENT_URI, table
-                            new String[]{MediaStore.Images.Media.TITLE, MediaStore.Images.Media.DATE_ADDED, MediaStore.Images.Media.DATA},      // The columns to return for each row
-                            MediaStore.Images.Media.TITLE + "=?",       // Selection criteria
-                            new String[]{picname},
-                            null);      // The sort order for the returned rows
-
-            cursor2.moveToFirst();
-            picpath[i] = cursor2.getString(2);
-            Log.d("テストj", picpath[i]);
-            StringBuilder sbuilder = new StringBuilder();
-            Log.d("テスト", "ほげ3");
-            cursor2.close();
-        }
-        return picpath;
-        // 忘れずに！
-
-
-    }
-    private void insertData(SQLiteDatabase db, String name, float longitude, float latitude){
-        ContentValues values = new ContentValues();
-        values.put("name", name);
-        values.put("longitude", longitude);
-        values.put("latitude", latitude);
-        db.insert("marker2", null, values);
     }
 
 }
