@@ -43,11 +43,14 @@ public class CameraActivity extends AppCompatActivity {
     public TestOpenHelper2 helper;
     public SQLiteDatabase db;
     Uri picpath,collection;
+    String storename;
     private static final int RESULT_PICK_IMAGEFILE = 1002;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+        Intent intent1 = getIntent();
+        storename = intent1.getStringExtra("name");//設定したkeyで取り出す
         imageView = findViewById(R.id.image_view);
         imageView2 = findViewById(R.id.image_view2);
         Button cameraButton = findViewById(R.id.camera_button);
@@ -135,7 +138,7 @@ public class CameraActivity extends AppCompatActivity {
                                     db = helper.getWritableDatabase();
                                 }
                                 Log.d("テスト","保存");
-                                insertData(db, "restaurant",name,date);
+                                insertData(db, storename,name,date);
                             }
                         }
                         cursor.close();
@@ -187,7 +190,7 @@ public class CameraActivity extends AppCompatActivity {
                 db = helper.getWritableDatabase();
             }
             Log.d("テスト","保存");
-            insertData(db, "restaurant",timeStamp,timeStamp2);
+            insertData(db, storename,timeStamp,timeStamp2);
             readData();
         }
         //readData();
@@ -247,8 +250,6 @@ public class CameraActivity extends AppCompatActivity {
                 picpath=(cursor2.getString(2));
                 cursor2.moveToNext();
             }
-
-
             cursor2.close();
             Bitmap bmImg = BitmapFactory.decodeFile(picpath);
             imageView2.setImageBitmap(bmImg);
