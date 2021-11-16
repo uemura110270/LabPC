@@ -213,14 +213,16 @@ public class MapsActivity extends AppCompatActivity
                     if(isExternalStorageWritable()){
                         String name=marker.getTitle();
                         Log.d("テスト",name);
-                        nextButton.setVisibility(View.VISIBLE);
-                        backButton.setVisibility(View.VISIBLE);
-                        winButton.setVisibility(View.VISIBLE);
-                        imageView.setVisibility(View.VISIBLE);
-                        //picpath1.set(new AtomicReferenceArray<>(readData3(name)));
                         picpath2=readData3(name);
-                        Bitmap bmImg = BitmapFactory.decodeFile(picpath2[num]);
-                        imageView.setImageBitmap(bmImg);
+                        if(picpath2[0]!="false") {
+                            nextButton.setVisibility(View.VISIBLE);
+                            backButton.setVisibility(View.VISIBLE);
+                            winButton.setVisibility(View.VISIBLE);
+                            imageView.setVisibility(View.VISIBLE);
+                            //picpath1.set(new AtomicReferenceArray<>(readData3(name)));
+                            Bitmap bmImg = BitmapFactory.decodeFile(picpath2[num]);
+                            imageView.setImageBitmap(bmImg);
+                        }
 
                     }
                 });
@@ -463,26 +465,33 @@ public class MapsActivity extends AppCompatActivity
 
         int p = cursor.getCount();
         Log.d("テストp", String.valueOf(p));
-        picpath = new String[p];
-        for (int i = 0; i < cursor.getCount()-1; i++) {
-            String picname = (cursor.getString(1));
-            cursor.moveToNext();
-            Log.d("picname", picname);
-            ContentResolver contentResolver2 = getContentResolver();
-            Cursor cursor2 =
-                    contentResolver2.query(
-                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,             // UserDictionary.Words.CONTENT_URI, table
-                            new String[]{MediaStore.Images.Media.TITLE, MediaStore.Images.Media.DATE_ADDED, MediaStore.Images.Media.DATA},      // The columns to return for each row
-                            MediaStore.Images.Media.TITLE + "=?",       // Selection criteria
-                            new String[]{picname},
-                            null);      // The sort order for the returned rows
 
-            cursor2.moveToFirst();
-            picpath[i] = cursor2.getString(2);
-            Log.d("テストj", picpath[i]);
-            StringBuilder sbuilder = new StringBuilder();
-            Log.d("テスト", "ほげ3");
-            cursor2.close();
+        if(p==0) {
+            picpath = new String[1];
+            picpath[0] = "false";
+        }else {
+            picpath = new String[p];
+
+            for (int i = 0; i < cursor.getCount() - 1; i++) {
+                String picname = (cursor.getString(1));
+                cursor.moveToNext();
+                Log.d("picname", picname);
+                ContentResolver contentResolver2 = getContentResolver();
+                Cursor cursor2 =
+                        contentResolver2.query(
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,             // UserDictionary.Words.CONTENT_URI, table
+                                new String[]{MediaStore.Images.Media.TITLE, MediaStore.Images.Media.DATE_ADDED, MediaStore.Images.Media.DATA},      // The columns to return for each row
+                                MediaStore.Images.Media.TITLE + "=?",       // Selection criteria
+                                new String[]{picname},
+                                null);      // The sort order for the returned rows
+
+                cursor2.moveToFirst();
+                picpath[i] = cursor2.getString(2);
+                Log.d("テストj", picpath[i]);
+                StringBuilder sbuilder = new StringBuilder();
+                Log.d("テスト", "ほげ3");
+                cursor2.close();
+            }
         }
         return picpath;
             // 忘れずに！
